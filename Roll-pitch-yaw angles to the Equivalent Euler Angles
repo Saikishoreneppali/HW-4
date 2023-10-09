@@ -1,0 +1,45 @@
+import numpy as np
+gamma = int(input("Enter Gamma value = "))
+beta = int(input("Enter Beta value = "))
+alpha = int(input("Enter Alpha value = "))
+
+def rpy_to_zyz(gamma, beta, alpha):
+    # Convert the angles to radians
+    gamma = np.radians(gamma)
+    beta = np.radians(beta)
+    alpha = np.radians(alpha)
+
+    # rotation matrix
+    R_x = np.array([
+        [1, 0, 0],
+        [0, np.cos(gamma), -np.sin(gamma)],
+        [0, np.sin(gamma), np.cos(gamma)]
+    ])
+    R_y = np.array([
+        [np.cos(beta), 0, np.sin(beta)],
+        [0, 1, 0],
+        [-np.sin(beta), 0, np.cos(beta)]
+    ])
+    R_z = np.array([
+        [np.cos(alpha), -np.sin(alpha), 0],
+        [np.sin(alpha), np.cos(alpha), 0],
+        [0, 0, 1]
+    ])
+    R_rpy = np.dot(R_z, np.dot(R_y, R_x))
+
+    # Extract the ZYZ Euler angles from R_rpy
+    # First set of solutions
+    alpha_zyz_1 = np.arctan2(R_rpy[1, 2], R_rpy[0, 2])
+    beta_zyz_1 = np.arctan2(np.sqrt(R_rpy[0, 2]**2 + R_rpy[1, 2]**2), R_rpy[2, 2])
+    gamma_zyz_1 = np.arctan2(R_rpy[2, 1], -R_rpy[2, 0])
+
+    # Second set of solutions
+    alpha_zyz_2 = np.arctan2(-R_rpy[1, 2], -R_rpy[0, 2])
+    beta_zyz_2 = np.arctan2(-np.sqrt(R_rpy[0, 2]**2 + R_rpy[1, 2]**2), R_rpy[2, 2])
+    gamma_zyz_2 = np.arctan2(-R_rpy[2, 1], R_rpy[2, 0])
+
+    return (np.degrees(alpha_zyz_1), np.degrees(beta_zyz_1), np.degrees(gamma_zyz_1)), (np.degrees(alpha_zyz_2), np.degrees(beta_zyz_2), np.degrees(gamma_zyz_2))
+
+
+zyz_angles_1, zyz_angles_2 = rpy_to_zyz(gamma, beta, alpha)
+print(zyz_angles_1, zyz_angles_2)
